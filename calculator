@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Windows Calculator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #calculator {
+      position: relative;
+      background-color: #bfbfbf;
+      border: 1px solid #6c6a6a;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      text-align: right;
+      width: 350px;
+      height:320px;
+      transition: height 0.3s;
+    }
+
+    #number-pad {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    #calculator input {
+      width: calc(100% - 10px);
+      padding: 10px;
+      margin-bottom: 10px;
+      font-size: 18px;
+      margin-right: -10px;
+    }
+
+    #calculator button {
+      width: 60px;
+      height: 40px;
+      margin: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      border: 1px solid #0b0b0b;
+      border-radius: 5px;
+      background-color: #ffffff;
+    }
+
+    .windows-button {
+      position: absolute;
+      bottom: 5px;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 5px 10px;
+      border: 1px solid #1b1919;
+      border-radius: 5px;
+      background-color: #ffffff;
+      color: #000000;
+    }
+
+    #minimize-btn {
+      left: 10px;
+    }
+
+    #maximize-btn {
+      right: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="calculator">
+  <input type="text" id="equation" readonly>
+  <div id="number-pad">
+    <button onclick="appendToEquation('1')">1</button>
+    <button onclick="appendToEquation('2')">2</button>
+    <button onclick="appendToEquation('3')">3</button>
+    <button onclick="appendToEquation('4')">4</button>
+    <button onclick="appendToEquation('5')">5</button>
+    <button onclick="appendToEquation('6')">6</button>
+    <button onclick="appendToEquation('7')">7</button>
+    <button onclick="appendToEquation('8')">8</button>
+    <button onclick="appendToEquation('9')">9</button>
+    <button onclick="appendToEquation('0')">0</button>
+    <button onclick="appendToEquation('+')">+</button>
+    <button onclick="appendToEquation('-')">-</button>
+    <button onclick="appendToEquation('*')">*</button>
+    <button onclick="appendToEquation('/')">/</button>
+    <button onclick="addDecimalPoint()">.</button>
+    <button onclick="calculateResult()">=</button>
+    <button onclick="appendToEquation('(')">(</button>
+    <button onclick="appendToEquation(')')">)</button>
+    <button onclick="squareRoot()">√</button>
+    <button onclick="square()">x²</button>
+    <button onclick="clearEquation()">C</button>
+    <button onclick="eraseLastCharacter()">←</button>
+  </div>
+  <div id="minimize-btn" class="windows-button" onclick="toggleCalculator('minimize')">-</div>
+  <div id="maximize-btn" class="windows-button" onclick="toggleCalculator('maximize')">+</div>
+</div>
+
+<script>
+  function appendToEquation(value) {
+    document.getElementById('equation').value += value;
+  }
+  
+  function eraseLastCharacter() {
+    var currentEquation = document.getElementById('equation').value;
+    document.getElementById('equation').value = currentEquation.slice(0, -1);
+  }
+  
+  function clearEquation() {
+    document.getElementById('equation').value = '';
+  }
+  
+  function calculateResult() {
+    try {
+      var expression = document.getElementById('equation').value;
+      var result = evaluateExpression(expression);
+      document.getElementById('equation').value = String(result);
+    } catch (error) {
+      document.getElementById('equation').value = 'Error';
+    }
+  }
+  
+  function evaluateExpression(expression) {
+    
+    expression = expression.replace(/x/g, '*');
+    expression = expression.replace(/\(/g, '').replace(/\)/g, '');
+  
+    if (!isValidExpression(expression)) {
+      throw new Error('Invalid expression');
+    }
+  
+    return parseFloat(eval(expression).toFixed(8));
+  }
+  
+  function isValidExpression(expression) {
+ 
+    return expression.match(/^[0-9+\-*/.()]+$/);
+  }
+  
+  function addDecimalPoint() {
+    var currentValue = document.getElementById('equation').value;
+    if (!currentValue.endsWith('.') && !currentValue.match(/[+\-*/(]\d*\.$/)) {
+      document.getElementById('equation').value += '.';
+    }
+  }
+  
+  function squareRoot() {
+    var inputElement = document.getElementById('equation');
+    var inputValue = parseFloat(inputElement.value);
+  
+    if (!isNaN(inputValue) && inputValue >= 0) {
+      inputElement.value = Math.sqrt(inputValue).toFixed(8);
+    } else {
+      inputElement.value = 'Error';
+    }
+  }
+  
+  function square() {
+    var value = parseFloat(document.getElementById('equation').value);
+    if (!isNaN(value)) {
+      var result = value * value;
+      document.getElementById('equation').value = result.toFixed(8);
+    } else {
+      document.getElementById('equation').value = 'Error';
+    }
+  }
+  
+  function toggleCalculator(action) {
+    const calculator = document.getElementById('calculator');
+    const numberPad = document.getElementById('number-pad');
+  
+    if (action === 'minimize') {
+      calculator.style.height = '40px';
+      numberPad.style.display = 'none';
+    } else if (action === 'maximize') {
+      calculator.style.height = 'auto';
+      numberPad.style.display = 'flex';
+    }
+  }
+  </script>
+
+</body>
+</html>
